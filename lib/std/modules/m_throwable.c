@@ -67,7 +67,7 @@ void do_thrown_damage(object target, function damage_func)
 void do_thrown_vital_damage(object target, function damage_func)
 {
 	this_body()->start_fight(target);
-	this_body()->add_event(target, this_object(), choice(target->query_vital_limbs()),
+	this_body()->add_event(target, this_object(), 0,
 						   evaluate(damage_func));
 }
 

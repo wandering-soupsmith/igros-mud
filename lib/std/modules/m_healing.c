@@ -41,7 +41,7 @@ int query_heal_value()
 void heal_limb(string limb)
 {
    if (find_whom_to_heal())
-      find_whom_to_heal()->heal_us(heal_value, limb);
+      find_whom_to_heal()->heal_us(heal_value);
 }
 
 void heal_from_food()
@@ -65,5 +65,5 @@ void heal_from_drink()
 void heal_from_bandage(string limb)
 {
    if (find_whom_to_heal())
-      find_whom_to_heal()->heal_us(heal_value, limb);
+      find_whom_to_heal()->heal_us(heal_value);
 }

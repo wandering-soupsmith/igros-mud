@@ -23,7 +23,7 @@ mapping query_wielded_weapons()
 
 int can_wield(string limb, object ob)
 {
-   return ((weapons[limb] == ob || !weapons[limb]) && query_health(limb));
+   return (weapons[limb] == ob || !weapons[limb]);
 }
 
 string find_an_open_limb()
@@ -60,7 +60,7 @@ varargs void wield(object ob, string limb, int force_dual_wield)
    // if limb is zero, we use an open limb, or a random one if we are "full"
    if (!limb)
    {
-      mixed *limbs = filter(query_wielding_limbs(), ( : query_health($1) > 0 && can_wield($1, 0) :));
+      mixed *limbs = filter(query_wielding_limbs(), ( : can_wield($1, 0) :));
       // TBUG(limbs);
       if (sizeof(limbs))
          limb = choice(limbs);

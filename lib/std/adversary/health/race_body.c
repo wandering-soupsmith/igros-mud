@@ -123,6 +123,15 @@ string query_race_name()
    return race_name;
 }
 
+//: FUNCTION query_race_type
+// string query_race_type();
+// Returns the race type for equipment compatibility.
+string query_race_type()
+{
+   object race_obj = find_object("/std/race/" + race_name);
+   return race_obj ? race_obj->query_race_type() : "unknown";
+}
+
 //: FUNCTION query_limbs
 // string *query_limbs();
 // Returns all body parts that can be targeted in combat.

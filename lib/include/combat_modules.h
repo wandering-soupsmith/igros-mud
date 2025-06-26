@@ -109,10 +109,7 @@
 
 #define DEATH_VAPORIZE        1
 #define DEATH_CORPSES         2
-#define HEALTH_HITPOINTS      1
-#define HEALTH_LIMBS          2
-#define HEALTH_WOUNDS         3
-#define HEALTH_RACE_BODY      4
+#define HEALTH_RACE_BODY      1
 #define WIELD_SINGLE          1
 #define WIELD_MULTIPLE        2
 #define WIELD_LIMBS           3
@@ -163,23 +160,9 @@
 #endif
 #endif
 
-#if HEALTH_STYLE == HEALTH_HITPOINTS
-#define HEALTH_MODULE hit_points
-#else
-#if HEALTH_STYLE == HEALTH_LIMBS
-#define HEALTH_MODULE limbs
-#define HEALTH_USES_LIMBS
-#else
-#if HEALTH_STYLE == HEALTH_WOUNDS
-#define HEALTH_MODULE wounds
-#define HEALTH_USES_LIMBS
-#else
 #if HEALTH_STYLE == HEALTH_RACE_BODY
 #define HEALTH_MODULE race_body
 #define HEALTH_USES_LIMBS
-#endif
-#endif
-#endif
 #endif
 
 #if WIELD_STYLE == WIELD_SINGLE

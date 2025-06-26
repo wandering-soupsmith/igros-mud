@@ -11,6 +11,8 @@ varargs int query_max_health(string);
 
 private
 mapping armours = ([]);
+private
+object whole_body_item;  // New: for whole-body items like cloaks
 
 mapping query_armour_map()
 {
@@ -92,6 +94,45 @@ nomask int wear_item(object what, string where)
    string orig_w = where;
    mixed *also;
 
+   // Handle whole-body items
+   if (what->query_whole_body())
+   {
+      if (whole_body_item)
+         return 0;  // Already wearing a whole-body item
+      whole_body_item = what;
+      return 1;
+   }
+
+   // Handle body parts
+   if (what->query_body_parts() && sizeof(what->query_body_parts()))
+   {
+      string *parts = what->query_body_parts();
+      
+      // Check if all parts are available
+      foreach (string part in parts)
+      {
+         if (!is_limb(part))
+            return 0;
+         wi = find_wi(part);
+         if (!wi || wi.primary)
+            return 0;  // Part already occupied
+      }
+
+      // Wear on all parts
+      foreach (string part in parts)
+      {
+         wi = find_wi(part);
+         wi.primary = what;
+      }
+
+      // Handle also_covers for compatibility
+      also = what->also_covers();
+      if (also)
+         update_cover(what);
+
+      return 1;
+   }
+
    // Find the limb we want to use.
    if (is_limb(where))
       wi = find_wi(where);
@@ -140,6 +181,66 @@ nomask int remove_item(object what, string where)
    class wear_info wi;
    string orig_w = where;
    string *also;
+
+   // Handle whole-body items
+   if (what->query_whole_body())
+   {
+      if (whole_body_item == what)
+      {
+         whole_body_item = 0;
+         return 1;
+      }
+      return 0;
+   }
+
+   // Handle body parts
+   if (what->query_body_parts() && sizeof(what->query_body_parts()))
+   {
+      string *parts = what->query_body_parts();
+      int removed = 0;
+
+      foreach (string part in parts)
+      {
+         if (wi = find_wi(part))
+         {
+            if (wi.primary == what)
+            {
+               wi.primary = 0;
+               removed = 1;
+            }
+         }
+      }
+
+      // Clean up empty wear_info entries
+      foreach (string part in parts)
+      {
+         if (wi = find_wi(part))
+         {
+            if (!wi.primary && !wi.secondary && (!wi.others || !sizeof(wi.others)))
+               map_delete(armours, part);
+         }
+      }
+
+      // Handle also_covers for compatibility
+      also = what->also_covers();
+      if (also)
+         foreach (string limb in also)
+            if (wi = find_wi(limb))
+            {
+               wi.others -= ({what});
+               wi.others -= ({0});
+
+               if (sizeof(wi.others) == 0)
+               {
+                  if (wi.primary == 0)
+                     map_delete(armours, limb);
+                  else
+                     wi.others = 0;
+               }
+            }
+
+      return removed;
+   }
 
    if (!(wi = armours[where]) || (wi.primary != what && wi.secondary != what))
    {
@@ -202,4 +303,21 @@ object *event_get_armours(class event_info evt)
 {
    // Following ifdef added so this would update nicely always
    return query_armours(evt.target_extra);
+}
+
+//: FUNCTION query_worn_on
+// object query_worn_on(string body_part);
+// Returns the item worn on a specific body part.
+object query_worn_on(string body_part)
+{
+   class wear_info wi = find_wi(body_part);
+   return wi ? wi.primary : 0;
+}
+
+//: FUNCTION query_whole_body_item
+// object query_whole_body_item();
+// Returns the whole-body item being worn (cloak, robe, etc.)
+object query_whole_body_item()
+{
+   return whole_body_item;
 }

@@ -34,14 +34,10 @@ nomask void print_body(string cmd, string bodytype)
       foreach (string key, class limb val in body_info)
       {
          string *type = ({});
-         if (LIMB_VITAL & val->flags)
-            type += ({"vital"});
          if (LIMB_WIELDING & val->flags)
             type += ({"wielding"});
          if (LIMB_MOBILE & val->flags)
             type += ({"mobile"});
-         if (LIMB_SYSTEM & val->flags)
-            type += ({"system"});
          if (LIMB_ATTACKING & val->flags)
             type += ({"attacking"});
          output += sprintf("%-20s %-15d %-15s %-15s\n", key, val->health, val->parent ? val->parent : "None",
@@ -90,23 +86,17 @@ nomask void set_limb_flags(string bodytype, string limb, int health, string pare
       {
          switch (trim(lower_case(part)))
          {
-         case "vital":
-            limbflags |= LIMB_VITAL;
-            continue;
          case "wielding":
             limbflags |= LIMB_WIELDING;
             continue;
          case "mobile":
             limbflags |= LIMB_MOBILE;
             continue;
-         case "system":
-            limbflags |= LIMB_SYSTEM;
-            continue;
          case "attacking":
             limbflags |= LIMB_ATTACKING;
             continue;
          default:
-            input_one_arg("Only 'vital', 'wielding', 'mobile', 'attacking' and 'system' flags are allowed\n"
+            input_one_arg("Only 'wielding', 'mobile', and 'attacking' flags are allowed\n"
                           "Please reenter: ",
                           (
                               : set_limb_flags, bodytype, limb, health, parent:));

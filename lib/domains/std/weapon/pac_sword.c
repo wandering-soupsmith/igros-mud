@@ -17,30 +17,19 @@ class event_info source_modify_event(class event_info evt)
    int opp_health;
    int damage;
    int excess;
-   string *system_limbs;
 
    if (evt.data == "miss" || evt.data == "disarm")
       return evt;
 
-#ifdef HEALTH_USES_LIMBS
-   opp_health = evt->target->query_health(evt.target_extra);
-#else
    opp_health = evt->target->query_health();
-#endif
    damage = evt->data[sizeof(evt.data) - 1];
 
    if (opp_health <= damage)
    {
       excess = damage - opp_health;
-#if HEALTH_STYLE == HEALTH_HITPOINTS
-      for (int i = 0; i <= excess; i++)
-         decrement_damage(evt);
-#else  /* HEALTH_STYLE == HEALTH_LIMBS || HEALTH_STYLE == HEALTH_WOUNDS || HEALTH_STYLE == HEALTH_RACE_BODY */
-      // In the new race-based system, all limbs are considered vital/system
-      // So we apply excess damage regardless of limb type
+      // In the race-based system, all damage is applied to the global HP pool
       for (int i = 0; i < excess; i++)
          decrement_damage(evt);
-#endif /* HEALTH_STYLE */
    }
    return evt;
 }

@@ -33,6 +33,12 @@ nosave string slot;
 private
 nosave string *also_covering;
 private
+nosave string *body_parts;  // New: body parts this item covers
+private
+nosave int whole_body;      // New: 1 if this is a whole-body item (cloak, etc.)
+private
+nosave string race_type;    // New: race type this item is designed for (humanoid, tentacled, etc.)
+private
 int stat_mod;
 private
 int worn_under;
@@ -45,7 +51,7 @@ mapping stat_mods = ([]);
 
 void mudlib_setup()
 {
-   add_save(({"persist_flags"}));
+   add_save(({"persist_flags", "body_parts", "whole_body", "race_type"}));
 }
 
 mixed ob_state()
@@ -207,13 +213,75 @@ void set_also_covers(string *s...)
    also_covering = s;
 }
 
+//: FUNCTION set_body_parts
+// Set the body parts that this item covers.
+//  set_body_parts(({"chest", "stomach"}));
+void set_body_parts(string *parts)
+{
+   body_parts = parts;
+}
+
+//: FUNCTION query_body_parts
+// Return the body parts that this item covers.
+string *query_body_parts()
+{
+   return body_parts || ({});
+}
+
+//: FUNCTION set_whole_body
+// Set whether this is a whole-body item (cloak, robe, etc.)
+// that doesn't occupy specific body parts.
+void set_whole_body(int wb)
+{
+   whole_body = wb;
+}
+
+//: FUNCTION query_whole_body
+// Return whether this is a whole-body item.
+int query_whole_body()
+{
+   return whole_body;
+}
+
+//: FUNCTION set_race_type
+// Set the race type this item is designed for.
+//  set_race_type("humanoid");  // for humans, elves, etc.
+//  set_race_type("tentacled"); // for squids, etc.
+void set_race_type(string rt)
+{
+   race_type = rt;
+}
+
+//: FUNCTION query_race_type
+// Return the race type this item is designed for.
+string query_race_type()
+{
+   return race_type;
+}
+
 string worn_attributes()
 {
-   string *all = ({slot});
+   string *all = ({});
    string worn_str = "";
 
-   if (also_covers())
-      all += also_covers();
+   // Handle whole-body items
+   if (query_whole_body())
+   {
+      return "(worn as " + (query_worn_under() ? "underwear " : "") + "overall garment)";
+   }
+
+   // Handle body parts
+   if (body_parts && sizeof(body_parts))
+   {
+      all = copy(body_parts);
+   }
+   // Fall back to old slot system for compatibility
+   else if (slot)
+   {
+      all = ({slot});
+      if (also_covers())
+         all += also_covers();
+   }
 
    if (sizeof(all) > 1)
    {
@@ -328,9 +396,54 @@ void do_remove()
 mixed direct_wear_obj()
 {
    object who = owner(this_object());
+   string *available_slots;
 
    if (who != this_body())
       return 0;
+
+   // Check race compatibility
+   if (race_type && who->query_race_name())
+   {
+      string wearer_race = who->query_race_name();
+      if (race_type == "humanoid" && member_array(wearer_race, ({"human", "elf", "dwarf"})) == -1)
+         return "This " + this_object()->query_id()[0] + " doesn't fit your anatomy.\n";
+      if (race_type == "tentacled" && member_array(wearer_race, ({"squid"})) == -1)
+         return "This " + this_object()->query_id()[0] + " doesn't fit your anatomy.\n";
+   }
+
+   // Handle whole-body items
+   if (query_whole_body())
+   {
+      if (test_flag(F_WORN))
+         return "But you are already wearing it!\n";
+      return 1;
+   }
+
+   // Handle body parts
+   if (body_parts && sizeof(body_parts))
+   {
+      if (test_flag(F_WORN))
+         return "But you are already wearing it!\n";
+
+      // Check if wearer has all required body parts
+      available_slots = who->query_armour_slots();
+      foreach (string part in body_parts)
+      {
+         if (member_array(part, available_slots) == -1)
+            return "You don't have a " + part + " to wear this on.\n";
+      }
+
+      // Check for slot collisions
+      foreach (string part in body_parts)
+      {
+         if (who->query_worn_on(part))
+            return "You're already wearing something on your " + part + ".\n";
+      }
+
+      return 1;
+   }
+
+   // Fall back to old slot system for compatibility
    if (!this_body()->has_body_slot(slot) && !this_body()->has_body_slot("right " + slot))
       return "You cannot seem to find anywhere to put it on!\n";
    if (test_flag(F_WORN))

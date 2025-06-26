@@ -207,9 +207,6 @@ mixed direct_wield_obj_in_str(object ob, string limb)
    if (member_array(limb, who->query_wielding_limbs()) == -1)
       return 0;
 
-   if (!who->query_health(limb))
-      return sprintf("Your %s is in no condition to wield that!\n", limb);
-
    return 1;
 }
 

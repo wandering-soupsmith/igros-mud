@@ -258,16 +258,16 @@ void before_move()
       int roll = random(100);
       if (roll < PERCENT_TO_TAKE_DMG_ENCUMBERED)
       {
-         string limb = choice(this_body()->query_limbs() - this_body()->query_non_limbs());
-         if (this_body()->is_vital_limb(limb) && this_body()->query_health(limb) > 5)
+         // In the race-based system, we just apply damage to global HP
+         if (this_body()->query_health() > 5)
          {
-            this_body()->hurt_us(random(3) + 1, limb);
-            this_body()->simple_action("$N $vhurt $p $o transporting so much weight.", limb);
+            this_body()->hurt_us(random(3) + 1);
+            this_body()->simple_action("$N $vhurt $p $o transporting so much weight.", "body");
          }
          else
          {
-            this_body()->hurt_us(random(3) + 1, limb);
-            this_body()->simple_action("$N $vhurt $p $o transporting so much weight.", limb);
+            this_body()->hurt_us(random(3) + 1);
+            this_body()->simple_action("$N $vhurt $p $o transporting so much weight.", "body");
          }
       }
    }

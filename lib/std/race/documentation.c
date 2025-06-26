@@ -38,16 +38,22 @@ string short_description()
 mapping query_body_parts()
 {
    return ([
-      "head": ([ "slot": 1, "hit_weight": 10 ]),
-      "torso": ([ "slot": 1, "hit_weight": 40 ]),
-      "left arm": ([ "slot": 1, "hit_weight": 15 ]),
-      "right arm": ([ "slot": 1, "hit_weight": 15 ]),
-      "left hand": ([ "slot": 1, "hit_weight": 5 ]),
-      "right hand": ([ "slot": 1, "hit_weight": 5 ]),
-      "left leg": ([ "slot": 1, "hit_weight": 10 ]),
-      "right leg": ([ "slot": 1, "hit_weight": 10 ]),
-      "left foot": ([ "slot": 1, "hit_weight": 0 ]),
-      "right foot": ([ "slot": 1, "hit_weight": 0 ]),
+      "left thigh": ([ "slot": 1, "hit_weight": 6 ]),
+      "left calf": ([ "slot": 1, "hit_weight": 4 ]),
+      "left foot": ([ "slot": 1, "hit_weight": 2 ]),
+      "right thigh": ([ "slot": 1, "hit_weight": 6 ]),
+      "right calf": ([ "slot": 1, "hit_weight": 4 ]),
+      "right foot": ([ "slot": 1, "hit_weight": 2 ]),
+      "neck": ([ "slot": 1, "hit_weight": 4 ]),
+      "head": ([ "slot": 1, "hit_weight": 8 ]),
+      "chest": ([ "slot": 1, "hit_weight": 16 ]),
+      "stomach": ([ "slot": 1, "hit_weight": 12 ]),
+      "right shoulder": ([ "slot": 1, "hit_weight": 6 ]),
+      "right arm": ([ "slot": 1, "hit_weight": 5 ]),
+      "right hand": ([ "slot": 1, "hit_weight": 3 ]),
+      "left shoulder": ([ "slot": 1, "hit_weight": 6 ]),
+      "left arm": ([ "slot": 1, "hit_weight": 5 ]),
+      "left hand": ([ "slot": 1, "hit_weight": 3 ]),
    ]);
 }
 

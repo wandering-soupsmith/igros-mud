@@ -13,6 +13,7 @@ void setup()
    set_armour_class(4);
    set_resist("slashing", 2); // a little better against blades
    set_wearmsg("$N $vput on a $o.");
-   set_slot("torso");
-   set_also_covers("left arm", "right arm");
+   set_body_parts(({"chest", "stomach"}));
+   set_race_type("humanoid");
+   set_also_covers("left arm", "right arm"); // For backward compatibility
 }

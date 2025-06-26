@@ -113,56 +113,20 @@ void stun(string limb, int period)
       break;
    }
 
-   // Vital limbs
-   if (member_array(limb, query_vital_limbs()) != -1)
+   // In the race-based system, all limbs are treated equally for stun effects
+   if (!test_skill("combat/defense/stance", period * 10 * stance_impact, train_limit))
    {
-      if (!test_skill("combat/defense/stance", period * 10 * stance_impact, train_limit))
-      {
-         if (drunk_action)
-            simple_action(drunk_action, limb);
-         simple_action("$N $vare %^COMBAT_CONDITION%^stunned%^RESET%^ by a hit to $p $o!", limb);
+      if (drunk_action)
+         simple_action(drunk_action, limb);
+      simple_action("$N $vare %^COMBAT_CONDITION%^stunned%^RESET%^ by a hit to $p $o!", limb);
 
-         stunned = time() + period;
-         prone = 1;
-      }
-      else
-      {
-         simple_action("$N $vare %^COMBAT_CONDITION%^stunned%^RESET%^ and almost $vtopple over.");
-         stunned = time() + (period / 2);
-      }
+      stunned = time() + period;
+      prone = 1;
    }
-   // Wielding limbs
-   else if (member_array(limb, query_wielding_limbs()) != -1)
+   else
    {
-      if (!test_skill("combat/defense/disarm", period * 5, train_limit))
-      {
-         filtered_simple_action("$P $o $vare stunned.", ( : message_filter:), "simple_stun", limb);
-
-         do_unwield(limb);
-      }
-      else
-      {
-         filtered_simple_action("$P $o is stunned but $n $vretain contol.", ( : message_filter:), "simple_stun", limb);
-      }
-   }
-   // Mobile limbs
-   else if (member_array(limb, query_mobile_limbs()) != -1)
-   {
-      if (!test_skill("combat/defense/stance", period * 10 * stance_impact, train_limit))
-      {
-         filtered_simple_action("$P $o $vare stunned and $n $vfall to the ground.",
-                                (
-                                    : message_filter:),
-                                "simple_stun", limb);
-         prone = 1;
-      }
-      else
-      {
-         filtered_simple_action("$P $o $vare stunned, $n $vstagger but $vremain standing.",
-                                (
-                                    : message_filter:),
-                                "simple_stun", limb);
-      }
+      simple_action("$N $vare %^COMBAT_CONDITION%^stunned%^RESET%^ and almost $vtopple over.");
+      stunned = time() + (period / 2);
    }
 }
 

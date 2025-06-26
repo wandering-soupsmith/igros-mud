@@ -2,8 +2,7 @@
 
 // mod_config.c - Module config checker. Make sure that modules are
 //    defined correctly and that incompatible modules aren't defined
-//    together. (e.g. WIELD_LIMBS being used when HEALTH_HITPOINTS is
-//    defined.) This module is not necessary, and if you write your own
+//    together. This module is not necessary, and if you write your own
 //    adversary modules it would be easier to remove this than to maintain
 //    it. HOWEVER, if you remove this module and screw up your setup,
 //    don't go whining to us about it. You're on your own.
@@ -15,24 +14,12 @@ void check_combat_config()
    error("No valid death style set.\n");
 #endif
 
-#if HEALTH_STYLE != HEALTH_HITPOINTS && HEALTH_STYLE != HEALTH_LIMBS && HEALTH_STYLE != HEALTH_WOUNDS && HEALTH_STYLE != HEALTH_RACE_BODY
-   error("No valid health style set.\n");
-#endif
-
-#if WIELD_STYLE == WIELD_LIMBS
-#ifndef HEALTH_USES_LIMBS
-   error("WIELD_LIMBS requires either HEALTH_LIMBS, HEALTH_WOUNDS, or HEALTH_RACE_BODY.\n");
-#endif
+#if HEALTH_STYLE != HEALTH_RACE_BODY
+   error("Only HEALTH_RACE_BODY is supported.\n");
 #endif
 
 #if WIELD_STYLE != WIELD_LIMBS && WIELD_STYLE != WIELD_SINGLE && WIELD_STYLE != WIELD_MULTIPLE
    error("No valid wield style set.\n");
-#endif
-
-#if ARMOUR_STYLE == ARMOUR_LIMBS
-#ifndef HEALTH_USES_LIMBS
-   error("ARMOUR_LIMBS requires either HEALTH_LIMBS, HEALTH_WOUNDS, or HEALTH_RACE_BODY.\n");
-#endif
 #endif
 
 #if ARMOUR_STYLE != ARMOUR_SIMPLE_SLOTS && ARMOUR_STYLE != ARMOUR_COMPLEX_SLOTS && ARMOUR_STYLE != ARMOUR_LIMBS

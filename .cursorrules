@@ -1,0 +1,44 @@
+# Lima MUD Development Rules
+
+## LPC Coding Standards
+- **ALWAYS** refer to CODING_STANDARDS.md for all LPC coding requirements
+- Follow the variable declaration rules: all declarations must be at function start
+- Use `this_object()->` for module function calls to inheriting objects
+- Check inheritance order and add forward declarations when needed
+- Follow the documented file naming conventions
+
+## Code Quality
+- Validate all inputs and check object existence before calling methods
+- Use proper error handling and graceful failure modes
+- Follow existing codebase patterns and conventions
+- Test with `update` commands before considering work complete
+
+## Project Structure
+- Modules: `m_*.c` (e.g., `m_wearable.c`)
+- Base classes: descriptive names (e.g., `armour.c`, `weapon.c`)
+- Race files: race name (e.g., `human.c`, `squid.c`)
+- Daemons: `*_d.c` (e.g., `body_d.c`)
+
+## Documentation
+- Use standard Lima documentation format for all functions
+- Include proper function headers with parameter descriptions
+- Document class structures and important variables
+
+## Testing
+- Always provide update commands for modified files
+- Test basic functionality before considering work complete
+- Verify no compilation errors or memory issues
+
+## Race-Based System
+- Use global HP pool (no per-limb health)
+- Maintain compatibility with existing function signatures
+- Handle limb parameters gracefully (ignore them when appropriate)
+- Validate equipment against race-specific body parts
+
+## Equipment System
+- Implement proper slot collision detection
+- Support whole-body items (cloaks, robes)
+- Include race compatibility checks
+- Use body parts for equipment validation
+
+Remember: Consistency is more important than perfection. When in doubt, follow existing patterns in the codebase. 
