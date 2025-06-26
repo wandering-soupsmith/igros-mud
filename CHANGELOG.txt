@@ -1,0 +1,78 @@
+# Lima MUD Changelog
+
+This file tracks major changes, migrations, and system updates to the codebase. Please append new changes to the top, with a date and a short summary/context.
+
+---
+
+## [2024-12-19] Race-Based Body System Refactor & Score Command Improvements
+**Author:** AI-assisted refactor
+
+### Context
+This update refactors the Lima MUD body system from limb-based health to race-based aggregated health, and improves the score command display format. The new system uses a single global HP pool instead of per-limb health, making the system simpler and more maintainable.
+
+### Major Changes
+
+#### Race-Based Body System
+- **lib/std/adversary/health/race_body.c**: Refactored to use race-based body parts instead of limb-based health. Now inherits M_BODY_STATS and acts as a pure wrapper around the centralized stat system. Removed hardcoded health variables and updated all health functions to delegate to M_BODY_STATS.
+- **lib/std/adversary/health/hit_points.c**: Updated to be compliant with the new aggregated health system. Removed local health variables and now inherits M_BODY_STATS. Updated all functions (set_health, hurt_us, heal_us, heal_all) to use the centralized stat system. Fixed LPC syntax issues with variable declarations and inheritance order.
+- **lib/std/modules/m_bodystats.c**: Enhanced with new resource management functions for the aggregated health system. Added set_hp(), set_fatigue(), set_mana(), hurt_hp(), heal_hp(), hurt_fatigue(), heal_fatigue(), hurt_mana(), heal_mana(), and heal_all_resources() functions. These enable proper HP, fatigue, and mana modification in the new system.
+
+#### Score Command Improvements
+- **lib/cmds/player/score.c**: Reformatted the stats display to show a cleaner, more organized format. Now displays stats in columns with proper alignment, shows total stats calculation, and uses the correct function names for HP, mana, and fatigue display. Updated to use query_hp(), query_hp_pure(), query_mana(), query_mana_pure(), query_fatigue(), and query_fatigue_pure().
+
+#### System Configuration
+- **config.lima**: Updated to use HEALTH_RACE_BODY instead of limb-based health system.
+- **lib/std/race/**: Simplified race system by removing all races except human to avoid circular dependency issues during development.
+
+### Technical Details
+- **Health Calculation**: HP = Constitution * 3 + Strength * 2
+- **Fatigue Calculation**: Fatigue = Willpower * 3 + Constitution * 2  
+- **Mana Calculation**: Mana = Intelligence * 3 + Willpower * 2
+- **Aggregated Health**: Single global HP pool instead of per-limb health tracking
+- **Resource Management**: Centralized HP, fatigue, and mana modification through M_BODY_STATS
+
+### Migration Notes
+- All bodies now use the race-based health system by default
+- Health is now aggregated across the entire body rather than tracked per limb
+- Score command displays stats in a cleaner, more readable format
+- All health modification functions now go through M_BODY_STATS for consistency
+
+### Testing
+- Verify that HP, mana, and fatigue calculations work correctly
+- Test damage and healing functions work with the new aggregated system
+- Confirm score command displays stats in the expected format
+- Check that all races properly inherit and use the new body system
+
+---
+
+## [2024-MM-DD] 6-Core Stat System Migration
+**Author:** AI-assisted migration
+
+### Context
+This update replaces the legacy stat and derived stat system with a new, extensible 6-core stat system for all player and monster bodies in the Lima MUD codebase. The new system features:
+- 6 core stats: Strength, Dexterity, Constitution, Intelligence, Willpower, Charisma
+- Derived stats: HP, Fatigue, Mana (with simple, direct formulas)
+- No stat caps (stats can grow indefinitely)
+- Backward compatibility for legacy stat names (AGI, WIS, MAN)
+- Simplified, maintainable codebase
+
+### Major Changes
+- **lib/std/modules/m_bodystats.c**: Replaced the old stat system with the new 6-core stat system. Updated all stat logic, derived stat formulas, and removed the old transformation matrix. Added backward compatibility functions for old stat names (AGI → DEX, WIS → WIL, MAN → MANA).
+- **lib/std/classes/statmods.c**: Updated the stat modifier class to support the new 6-core stat system. Changed from 4 stat modifiers to 6 (added DEX, CON, CHA). Updated extra mods to use HP, Fatigue, Mana.
+- **lib/std/adversary.c**: Simplified and removed the old transformation matrix and racial bonus logic. Now relies on the new, direct stat formulas for all derived stats.
+- **lib/std/race/human.c, lib/std/race/restricted/coder.c, lib/std/race/documentation.c**: Updated `query_roll_mods()` to use the new 6-core stat fields. Removed obsolete `racial_*_bonus()` functions.
+
+### Migration Notes
+- All player and monster bodies now use the new stat system by default.
+- All legacy stat queries and modifiers are mapped to the new system for compatibility.
+- All new content should use the 6-core stat fields and formulas.
+- All experimental/new files created during the migration have been deleted for cleanliness.
+
+### Testing
+- Test character creation, stat modification, and combat for all races.
+- Verify that all derived stats (HP, Fatigue, Mana) scale as expected.
+- Check for any legacy code that may reference removed/renamed stat fields.
+
+---
+
+# Append future changes below this line, with date and summary. 

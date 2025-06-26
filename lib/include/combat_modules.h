@@ -112,6 +112,7 @@
 #define HEALTH_HITPOINTS      1
 #define HEALTH_LIMBS          2
 #define HEALTH_WOUNDS         3
+#define HEALTH_RACE_BODY      4
 #define WIELD_SINGLE          1
 #define WIELD_MULTIPLE        2
 #define WIELD_LIMBS           3
@@ -133,7 +134,7 @@
 ** screw up your user data files.
 */
 #define DEATH_STYLE       DEATH_CORPSES
-#define HEALTH_STYLE      HEALTH_LIMBS
+#define HEALTH_STYLE      HEALTH_RACE_BODY
 #define WIELD_STYLE       WIELD_LIMBS
 #define ARMOUR_STYLE       ARMOUR_LIMBS
 #define PULSE_STYLE       PULSE_HEART_BEAT
@@ -172,6 +173,11 @@
 #if HEALTH_STYLE == HEALTH_WOUNDS
 #define HEALTH_MODULE wounds
 #define HEALTH_USES_LIMBS
+#else
+#if HEALTH_STYLE == HEALTH_RACE_BODY
+#define HEALTH_MODULE race_body
+#define HEALTH_USES_LIMBS
+#endif
 #endif
 #endif
 #endif

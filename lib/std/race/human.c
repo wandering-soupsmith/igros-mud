@@ -21,35 +21,25 @@ string short_description()
 }
 
 /*
- * These are the bonuses for the derived statistics.  If this is zero, the
- * Normal derivation is used, however, if a bonus exists, then the stat
- * is scaled into that range.
- *
- * For example, consider a race with a racial con bonus of 50.
- *
- * The derived constitution is a weighted average of 3 base stats.  This
- * gives a number in the range [0..100].  The racial bonus says that that
- * number should be adjusted into the range [50..100].  This has three effects:
- *
- * (1) All members of the race will have at least 50 constitution.
- * (2) 100 is the max for all races.
- * (3) Races that start out with a bonus advance slower (since the range is
- *     compressed).  For example, if your base stats go up by 10, then your
- *     con would only increase by 5.
+ * Define the body parts for this race.
+ * Each body part has:
+ *   slot: 1 if it can wear equipment, 0 if not
+ *   hit_weight: relative chance of being hit in combat (0 = can't be hit)
  */
-int racial_con_bonus()
+mapping query_body_parts()
 {
-   return 0;
-}
-
-int racial_wis_bonus()
-{
-   return 0;
-}
-
-int racial_cha_bonus()
-{
-   return 0;
+   return ([
+      "head": ([ "slot": 1, "hit_weight": 10 ]),
+      "torso": ([ "slot": 1, "hit_weight": 40 ]),
+      "left arm": ([ "slot": 1, "hit_weight": 15 ]),
+      "right arm": ([ "slot": 1, "hit_weight": 15 ]),
+      "left hand": ([ "slot": 1, "hit_weight": 5 ]),
+      "right hand": ([ "slot": 1, "hit_weight": 5 ]),
+      "left leg": ([ "slot": 1, "hit_weight": 10 ]),
+      "right leg": ([ "slot": 1, "hit_weight": 10 ]),
+      "left foot": ([ "slot": 1, "hit_weight": 0 ]), // can wear but not hit
+      "right foot": ([ "slot": 1, "hit_weight": 0 ]),
+   ]);
 }
 
 class stat_roll_mods query_roll_mods()
@@ -62,14 +52,20 @@ class stat_roll_mods query_roll_mods()
    ret.str_adjust = 9;
    ret.str_range = 10;
 
-   ret.agi_adjust = 3;
-   ret.agi_range = 10;
+   ret.dex_adjust = 3;
+   ret.dex_range = 10;
+
+   ret.con_adjust = 0;
+   ret.con_range = 10;
 
    ret.int_adjust = 3;
    ret.int_range = 5;
 
    ret.wil_adjust = -15;
    ret.wil_range = 10;
+
+   ret.cha_adjust = 0;
+   ret.cha_range = 10;
 
    return ret;
 }

@@ -15,13 +15,13 @@ void check_combat_config()
    error("No valid death style set.\n");
 #endif
 
-#if HEALTH_STYLE != HEALTH_HITPOINTS && HEALTH_STYLE != HEALTH_LIMBS && HEALTH_STYLE != HEALTH_WOUNDS
+#if HEALTH_STYLE != HEALTH_HITPOINTS && HEALTH_STYLE != HEALTH_LIMBS && HEALTH_STYLE != HEALTH_WOUNDS && HEALTH_STYLE != HEALTH_RACE_BODY
    error("No valid health style set.\n");
 #endif
 
 #if WIELD_STYLE == WIELD_LIMBS
 #ifndef HEALTH_USES_LIMBS
-   error("WIELD_LIMBS requires either HEALTH_LIMBS or HEALTH_WOUNDS.\n");
+   error("WIELD_LIMBS requires either HEALTH_LIMBS, HEALTH_WOUNDS, or HEALTH_RACE_BODY.\n");
 #endif
 #endif
 
@@ -31,7 +31,7 @@ void check_combat_config()
 
 #if ARMOUR_STYLE == ARMOUR_LIMBS
 #ifndef HEALTH_USES_LIMBS
-   error("ARMOUR_LIMBS requires either HEALTH_LIMBS or HEALTH_WOUNDS.\n");
+   error("ARMOUR_LIMBS requires either HEALTH_LIMBS, HEALTH_WOUNDS, or HEALTH_RACE_BODY.\n");
 #endif
 #endif
 

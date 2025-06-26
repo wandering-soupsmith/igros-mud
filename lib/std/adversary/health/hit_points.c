@@ -7,6 +7,7 @@
  * a huge CPU gain.
  */
 
+inherit M_BODY_STATS;
 inherit __DIR__ "diagnose_msg";
 
 void die();
@@ -14,10 +15,15 @@ varargs int query_health(string unused);
 int query_asleep();
 int query_stunned();
 
-private
-int health = 1;
-private
-int max_health = 1;
+// Forward declarations for M_BODY_STATS functions
+int hurt_hp(int);
+int query_hp();
+int query_hp_pure();
+void heal_all();
+void set_hp(int hp);
+void heal_hp(int healing);
+void heal_all_resources();
+
 private
 nosave int health_time = time();
 private
@@ -44,7 +50,9 @@ int query_heal_rate()
 // hit points to the new max.
 void set_max_health(int x)
 {
-   health = max_health = x;
+   // In the new system, max health is calculated from stats
+   // This function is kept for compatibility but doesn't actually set max health
+   // The max health is determined by the stats system
    health_time = time(); /* old healing irrelevant */
 }
 
@@ -64,15 +72,12 @@ void kill_us()
 // see also: set_max_health
 void set_health(int x)
 {
-   if (x > max_health)
-      error("Attempt to set health > max_health.\n");
-   if (health == 0)
-      return;
-   health = x;
-   if (health <= 0)
+   if (x <= 0)
       kill_us();
    else
       health_time = time(); /* old healing irrelevant */
+   
+   set_hp(x);
 }
 
 //: FUNCTION hurt_us
@@ -80,12 +85,13 @@ void set_health(int x)
 // Hurt us a specified amount.
 varargs int hurt_us(int x, string unused)
 {
-   query_health(); /* must update healing first */
+   int damage_dealt;
 
-   health -= x;
-   if (health <= 0)
+   query_health(); /* must update healing first */
+   damage_dealt = hurt_hp(x);
+   if (query_health() <= 0)
       kill_us();
-   return x;
+   return damage_dealt;
 }
 
 //: FUNCTION heal_us
@@ -100,11 +106,8 @@ void heal_us(int x)
     * health need to make sure health is updated (since not-added-yet healing
     * may make a difference in whether you die or not).
     */
-   if (health == 0)
-      return;
-   health += x;
-   if (health > max_health)
-      health = max_health;
+   
+   heal_hp(x);
 }
 
 //: FUNCTION reincarnate
@@ -113,10 +116,7 @@ void heal_us(int x)
 void reincarnate()
 {
    dead = 0;
-   if (health < 1)
-   {
-      health = 1;
-   }
+   heal_all();
    health_time = time();
 }
 
@@ -138,7 +138,7 @@ void update_health()
 varargs int query_health(string unused)
 {
    update_health();
-   return health;
+   return query_hp();
 }
 
 //: FUNCTION query_max_health
@@ -146,7 +146,7 @@ varargs int query_health(string unused)
 // Find the maximum number of hitpoints of a monster.
 int query_max_health()
 {
-   return max_health;
+   return query_hp_pure();
 }
 
 //: FUNCTION heal_all
@@ -154,7 +154,7 @@ int query_max_health()
 // Heal us completely.
 void heal_all()
 {
-   set_health(query_max_health());
+   heal_all_resources();
 }
 
 int query_ghost()
@@ -174,7 +174,7 @@ string query_random_limb()
 // Returns 1 if we're nearing death.
 string badly_wounded()
 {
-   return health < max_health / 5 ? "badly" : 0;
+   return query_health() < query_max_health() / 5 ? "badly" : 0;
 }
 
 string diagnose()

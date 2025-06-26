@@ -6,8 +6,8 @@
 void save_me();
 varargs int query_level_for_xp(int xp);
 int query_xp_for_level(int lev);
-string query_body_style();
-void update_body_style(string);
+string query_race();
+void setup_race_body(string);
 void do_game_command(string str);
 
 private
@@ -31,7 +31,7 @@ void set_level(int x)
    experience = query_xp_for_level(x);
    level = x;
    // Refresh the body with new abilities after changing level.
-   update_body_style(query_body_style());
+   setup_race_body(query_race());
 #endif
 }
 

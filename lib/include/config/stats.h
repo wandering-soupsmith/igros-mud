@@ -37,4 +37,20 @@
 // Type: integer
 #define STAT_PTS_PER_LEVEL 3
 
+// Derived stat calculation factors for the new 6-core system
+// HP = constitution * HP_CON_FACTOR + strength * HP_STR_FACTOR
+#define HP_CON_FACTOR       3
+#define HP_STR_FACTOR       2
+
+// Fatigue = willpower * FATIGUE_WIL_FACTOR + constitution * FATIGUE_CON_FACTOR
+#define FATIGUE_WIL_FACTOR  3
+#define FATIGUE_CON_FACTOR  2
+
+// Mana = intelligence * MANA_INT_FACTOR + willpower * MANA_WIL_FACTOR
+#define MANA_INT_FACTOR     3
+#define MANA_WIL_FACTOR     2
+
+// Default stat range for character creation
+#define DEFAULT_RANGE       10
+
 #endif

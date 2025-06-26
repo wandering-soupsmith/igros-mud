@@ -35,22 +35,11 @@ class event_info source_modify_event(class event_info evt)
 #if HEALTH_STYLE == HEALTH_HITPOINTS
       for (int i = 0; i <= excess; i++)
          decrement_damage(evt);
-#else  /* HEALTH_STYLE == HEALTH_LIMBS || HEALTH_STYLE == HEALTH_WOUNDS */
-      if (evt->target->is_vital_limb(evt.target_extra))
-         for (int i = 0; i < excess; i++)
-            decrement_damage(evt);
-      if (evt->target->is_system_limb(evt.target_extra))
-      {
-         system_limbs = evt->target->query_system_limbs() - ({evt.target_extra});
-         foreach (string s in system_limbs)
-         {
-            if (evt->target->query_health(s) != -1)
-               return evt;
-         }
-
-         for (int i = 0; i < excess; i++)
-            decrement_damage(evt);
-      }
+#else  /* HEALTH_STYLE == HEALTH_LIMBS || HEALTH_STYLE == HEALTH_WOUNDS || HEALTH_STYLE == HEALTH_RACE_BODY */
+      // In the new race-based system, all limbs are considered vital/system
+      // So we apply excess damage regardless of limb type
+      for (int i = 0; i < excess; i++)
+         decrement_damage(evt);
 #endif /* HEALTH_STYLE */
    }
    return evt;

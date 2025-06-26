@@ -5,7 +5,7 @@
 //$$ see: skills, stats, score, spells
 // USAGE hp
 //
-// Prints your current HP on all your limbs with AC stats and types.
+// Prints your current HP, mana, and fatigue status.
 
 #include <classes.h>
 #include <config.h>
@@ -57,14 +57,14 @@ void main(string arg)
          out("Cannot find '" + arg + "'.\n");
          return;
       }
-      out("Limbs for " + capitalize(arg) + ":\n");
+      out("Status for " + capitalize(arg) + ":\n");
    }
 
    limbs = body->get_health();
 
    if (sizeof(limbs) == 0)
    {
-      out("No limbs found. Have fun, you ooze.\n");
+      out("No health data found.\n");
       return;
    }
 
@@ -77,25 +77,17 @@ void main(string arg)
 
    foreach (string name in names)
    {
-      class limb limb = limbs[name];
+      mapping limb_data = limbs[name];
       string *parts = explode(name, "/");
       string *type = ({});
       string name2 = repeat_string("   ", sizeof(parts) - 1) + parts[ < 1];
       int ac_total = 0;
       int level = sizeof(parts);
-      if (limb.max_health <= 0)
+      if (limb_data["max_health"] <= 0)
          continue;
 
-      if (LIMB_VITAL & limb.flags)
-         type += ({"vital"});
-      if (LIMB_WIELDING & limb.flags)
-         type += ({"wield"});
-      if (LIMB_MOBILE & limb.flags)
-         type += ({"move"});
-      if (LIMB_SYSTEM & limb.flags)
-         type += ({"system"});
-      if (LIMB_ATTACKING & limb.flags)
-         type += ({"attack"});
+      // In the new system, all limbs are considered vital
+      type += ({"vital"});
 
       if (arrayp(body->query_armours(name)))
          foreach (object armour in body->query_armours(name))
@@ -105,8 +97,8 @@ void main(string arg)
          }
 
       content += sprintf("%15s %6-s %5s/%5-s %5-s %s\n", capitalize(name),
-                         (sizeof(type) ? capitalize(implode(type, ",")) : ""), "" + limb.health, "" + limb.max_health,
-                         "" + ac_total, critical_bar(limb.health, limb.max_health, hp_bar));
+                         (sizeof(type) ? capitalize(implode(type, ",")) : ""), "" + limb_data["health"], "" + limb_data["max_health"],
+                         "" + ac_total, critical_bar(limb_data["health"], limb_data["max_health"], hp_bar));
    }
    content += sprintf("\n%15s %6-s %5s/%5-s %5-s %s\n", "Reflex", "Pool", "" + body->query_reflex(),
                       "" + body->max_reflex(), "-", green_bar(body->query_reflex(), body->max_reflex(), hp_bar));
@@ -124,6 +116,34 @@ void main(string arg)
 private
 void main(string arg)
 {
-   write("Current HP: " + this_body()->query_health() + "/" + this_body()->query_max_health() + "\n");
+   object body = this_body();
+   int width = this_user()->query_screen_width();
+   int hp_bar = width - 48;
+   string content = "";
+
+   if (strlen(arg) > 0 && wizardp(this_user()))
+   {
+      body = present(arg, environment(this_body()));
+      if (!body)
+      {
+         out("Cannot find '" + arg + "'.\n");
+         return;
+      }
+      out("Status for " + capitalize(arg) + ":\n");
+   }
+
+   content += sprintf("%15s %6-s %5s/%5-s %5-s %s\n", "Health", "Pool", "" + body->query_health(),
+                      "" + body->query_max_health(), "-", critical_bar(body->query_health(), body->query_max_health(), hp_bar));
+
+   content += sprintf("%15s %6-s %5s/%5-s %5-s %s\n", "Reflex", "Pool", "" + body->query_reflex(),
+                      "" + body->max_reflex(), "-", green_bar(body->query_reflex(), body->max_reflex(), hp_bar));
+
+   content += sprintf("\n%15s %6-s %8.8s    %5-s %s\n", "Intoxication", "%", "" + body->query_drunk_percent() + "%",
+                      "-", reverse_critical_bar(body->query_drunk(), body->query_max_drunk(), hp_bar));
+
+   content += sprintf("%15s %6-s %8.8s    %5-s %s\n", "System Abuse", "%", "" + body->query_abuse_percent() + "%", "-",
+                      reverse_critical_bar(body->query_abuse(), body->query_max_abuse(), hp_bar));
+
+   out(content);
 }
 #endif

@@ -81,6 +81,21 @@ nomask object query_link()
    return link;
 }
 
+//: FUNCTION query_race
+// Return the race of this body
+string query_race()
+{
+   object link = query_link();
+   if (link)
+   {
+      string name = query_name();
+      mapping bodies = link->query_bodies();
+      if (bodies && bodies[name])
+         return bodies[name][2]; // BODY_RACE index
+   }
+   return "human"; // fallback
+}
+
 void mudlib_setup(mixed args...)
 {
    adversary::mudlib_setup(args...);

@@ -1,12 +1,13 @@
 /* Do not remove the headers from this file! see /USAGE for more info. */
 
 /*
-** statmods.c -- statistics modifiers
+** statmods.c -- statistics modifiers for 6-core system
 **
 ** These classes are used by the race system to supply modifiers for the
 ** initial statistics generation, and adjusting statistics.
 **
 ** 950813, Deathblade: Created.
+** 2024: Updated for new 6-core stat system
 */
 
 /*
@@ -24,48 +25,54 @@ class stat_roll_mods
    int str_adjust;
    int str_range;
 
-   int agi_adjust;
-   int agi_range;
+   int dex_adjust;
+   int dex_range;
+
+   int con_adjust;
+   int con_range;
 
    int int_adjust;
    int int_range;
 
    int wil_adjust;
    int wil_range;
+
+   int cha_adjust;
+   int cha_range;
 }
 
 /*
-** These values specify what percentage of the con/wis racial modifier
+** These values specify what percentage of the derived stat modifier
 ** is a bonus.  The rest of the modifier is proportional to the other
 ** portion of the statistic.
 **
-** For example, let us say "con" is 30% racially biased.  Here are a
+** For example, let us say "hp" is 30% racially biased.  Here are a
 ** couple values for a couple races:
 **
-** RACE A: con_adjust = 75  (75% of the bonus is "free")
+** RACE A: hp_bonus = 75  (75% of the bonus is "free")
 **    racial bonus = 75% of 30% = 22.5%
 **    racial proportion = (25% of 30%) of X = 7.5% of X
 **
-**    con statistic (less racial mod) = 20%
+**    hp statistic (less racial mod) = 20%
 **      racial modifier = 7.5% * 20% = 1.5%
 **      racial bonus = 22.5%
 **      total = 44%
 **
-**    con statistic = 50%
+**    hp statistic = 50%
 **      racial modifier = 7.5% * 50% = 3.5%
 **      racial bonus = 22.5%
 **      total = 76%
 **
-** RACE B: con_adjust = 10
+** RACE B: hp_bonus = 10
 **    racial bonus = 10% of 30% = 3%
 **    racial proportion = (90% of 30%) of X = 27% of X
 **
-**    con statistic = 20%
+**    hp statistic = 20%
 **      racial modifier = 27% * 20% = 5.4%
 **      racial bonus = 3%
 **      total = 28.4%
 **
-**    con statistic = 50%
+**    hp statistic = 50%
 **      racial modifier = 27% * 50% = 13.5%
 **      racial bonus = 3%
 **      total = 66.5%
@@ -79,6 +86,7 @@ class stat_roll_mods
 */
 class stat_extra_mods
 {
-   int con_bonus;
-   int wis_bonus;
+   int hp_bonus;
+   int fatigue_bonus;
+   int mana_bonus;
 }

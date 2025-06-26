@@ -40,18 +40,24 @@ private
 string stats_string(object body, int width)
 {
    string content;
-   content = sprintf("BASE SCORES: Str %-4d%s  Agi %-4d%s  Int %-4d%s  Wil  %-4d%s\n" +
-                         "DERIVED    : Con %-4d%s  Wis %-4d%s  Cha %-4d%s  Mana %-4d%s\n",
-                     body->query_str(), (pretty_bonus(body->query_str() - body->query_str_pure())), body->query_agi(),
-                     (pretty_bonus(body->query_agi() - body->query_agi_pure())), body->query_int(),
-                     (pretty_bonus(body->query_int() - body->query_int_pure())), body->query_wil(),
-                     (pretty_bonus(body->query_wil() - body->query_wil_pure())), body->query_con(),
-                     (pretty_bonus(body->query_con() - body->query_con_pure())), body->query_wis(),
-                     (pretty_bonus(body->query_wis() - body->query_wis_pure())), body->query_cha(),
-                     (pretty_bonus(body->query_cha() - body->query_cha_pure())), body->query_man(),
-                     (pretty_bonus(body->query_man() - body->query_man_pure()))) +
-             "\n";
-
+   int total_stats;
+   
+   // Calculate total stats
+   total_stats = body->query_str() + body->query_int() + body->query_wil() + 
+                 body->query_con() + body->query_dex() + body->query_cha();
+   
+   content = sprintf("Strength:     %2d\n", body->query_str());
+   content += sprintf("Intelligence: %2d\n", body->query_int());
+   content += sprintf("Willpower:    %2d\n", body->query_wil());
+   content += sprintf("Constitution: %2d\n", body->query_con());
+   content += sprintf("Dexterity:    %2d\n", body->query_dex());
+   content += sprintf("Charisma:     %2d\n", body->query_cha());
+   content += sprintf("Total Stats:  %3d\n\n", total_stats);
+   
+   content += sprintf("Hitpoints:     %3d/%3d\n", body->query_hp(), body->query_hp_pure());
+   content += sprintf("Mana:          %3d/%3d\n", body->query_mana(), body->query_mana_pure());
+   content += sprintf("Fatigue:       %3d/%3d\n\n", body->query_fatigue(), body->query_fatigue_pure());
+   
    content += "Spare stat points: " + body->spare_points() + "\n\n";
    content += sprintf("XP Buff: %s\n\n",
                       (body->query_guild_xp_buff() ? "Guild buff " + body->query_guild_xp_buff() + "%" : "None"));

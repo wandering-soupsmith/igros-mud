@@ -17,8 +17,38 @@ string query_race()
  */
 string short_description()
 {
-   return "Documentation gets a huge bonus to charisma (it is, after all, a very beautiful thing :-) ).  Hopefully, "
-          "you will become documentation, since everyone knows a MUD needs as much as it can get.\n";
+   return "This race is used to document the race system.  It shows how races work.\n"
+          "\n"
+          "For example, consider a race with a racial con bonus of 50.\n"
+          "This means:\n"
+          "\n"
+          "(1) All members of the race will have at least 50 constitution.\n"
+          "(2) 100 is the max for all races.\n"
+          "(3) Races that start out with a bonus advance slower (since the range is\n"
+          "    smaller).\n"
+          "\n"
+          "This race has a con bonus of 50, so all documentation race members\n"
+          "will have between 50 and 100 constitution.\n";
+}
+
+/*
+ * Define the body parts for this race.
+ * Documentation race has the same body layout as humans.
+ */
+mapping query_body_parts()
+{
+   return ([
+      "head": ([ "slot": 1, "hit_weight": 10 ]),
+      "torso": ([ "slot": 1, "hit_weight": 40 ]),
+      "left arm": ([ "slot": 1, "hit_weight": 15 ]),
+      "right arm": ([ "slot": 1, "hit_weight": 15 ]),
+      "left hand": ([ "slot": 1, "hit_weight": 5 ]),
+      "right hand": ([ "slot": 1, "hit_weight": 5 ]),
+      "left leg": ([ "slot": 1, "hit_weight": 10 ]),
+      "right leg": ([ "slot": 1, "hit_weight": 10 ]),
+      "left foot": ([ "slot": 1, "hit_weight": 0 ]),
+      "right foot": ([ "slot": 1, "hit_weight": 0 ]),
+   ]);
 }
 
 /*
@@ -61,17 +91,23 @@ class stat_roll_mods query_roll_mods()
    /*
     * See the race stat overview in admtool, for race balance.
     */
-   ret.str_adjust = 20;
+   ret.str_adjust = 0;
    ret.str_range = 10;
 
-   ret.agi_adjust = 5;
-   ret.agi_range = 10;
+   ret.dex_adjust = 0;
+   ret.dex_range = 10;
 
-   ret.int_adjust = -15;
-   ret.int_range = 5;
+   ret.con_adjust = 50;
+   ret.con_range = 10;
 
-   ret.wil_adjust = -10;
+   ret.int_adjust = 0;
+   ret.int_range = 10;
+
+   ret.wil_adjust = 0;
    ret.wil_range = 10;
+
+   ret.cha_adjust = 0;
+   ret.cha_range = 10;
 
    return ret;
 }
