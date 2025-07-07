@@ -3,8 +3,8 @@
 #include <drunk.h>
 
 int query_ghost();
-void simple_action(string msg, mixed *obs...);
-varargs void filtered_simple_action(mixed msg, function filter, mixed extra, mixed *obs...);
+void simple_action(string msg, mixed context);
+varargs void filtered_simple_action(mixed msg, function filter, mixed extra, mixed *obs);
 varargs int test_skill(string skill, int opposing_skill, int no_learn);
 string *query_vital_limbs();
 string *query_mobile_limbs();
@@ -113,19 +113,19 @@ void stun(string limb, int period)
       break;
    }
 
-   // In the race-based system, all limbs are treated equally for stun effects
+   // In the race-based system, all stun effects are global
    if (!test_skill("combat/defense/stance", period * 10 * stance_impact, train_limit))
    {
       if (drunk_action)
-         simple_action(drunk_action, limb);
-      simple_action("$N $vare %^COMBAT_CONDITION%^stunned%^RESET%^ by a hit to $p $o!", limb);
+         simple_action(drunk_action, this_object());
+      simple_action("$N $vare %^COMBAT_CONDITION%^stunned%^RESET%^ by the blow.", this_object());
 
       stunned = time() + period;
       prone = 1;
    }
    else
    {
-      simple_action("$N $vare %^COMBAT_CONDITION%^stunned%^RESET%^ and almost $vtopple over.");
+      simple_action("$N $vare %^COMBAT_CONDITION%^stunned%^RESET%^ and almost $vtopple over.", this_object());
       stunned = time() + (period / 2);
    }
 }
@@ -152,7 +152,7 @@ void wake_up()
    if (asleep)
    {
       asleep = 0;
-      stun("vital", 5);
+      stun("torso", 5);
    }
 }
 

@@ -54,7 +54,7 @@ mixed light()
    mixed tmp = check_fuel();
    if (tmp != 1)
       return tmp;
-   start_decay();
+   resume_decay();
    return ::light();
 }
 

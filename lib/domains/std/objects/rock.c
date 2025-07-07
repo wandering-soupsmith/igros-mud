@@ -7,7 +7,9 @@ void setup()
 {
    set_adj("dull", "ordinary");
    set_id("rock");
-   set_weapon_class(5);
+   set_weapon_class("rock");
+   set_weapon_damage_class(5);
+   set_damage_type("blunt");
    set_long("It's a rather ordinary rock.");
    set_in_room_desc("There's a dull rock here.\n");
 #ifdef USE_SIZE

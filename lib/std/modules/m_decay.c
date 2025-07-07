@@ -125,6 +125,14 @@ void stop_decay()
    decays = 0;
 }
 
+//: FUNCTION resume_decay
+// void resume_decay()
+// Resume decay after it has been stopped with stop_decay().
+void resume_decay()
+{
+   decays = 1;
+}
+
 void mudlib_setup()
 {
    m_stateful::mudlib_setup();

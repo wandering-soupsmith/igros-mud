@@ -83,3 +83,41 @@ class stat_roll_mods query_roll_mods()
 
    return ret;
 }
+
+/*
+ * Define damage resistances for this race.
+ * Positive values = resistance (reduces damage)
+ * Negative values = vulnerability (increases damage)
+ * Values are percentages (e.g., 25 = 25% resistance)
+ */
+mapping query_damage_resistances()
+{
+   return ([
+      // Humans are average - no special resistances or vulnerabilities
+      "radiant": 0,
+      "plasma": 0,
+      "fire": 0,
+      "electric": 0,
+      "sonic": 0,
+      "cold": 0,
+      "psionic": 0,
+      "corrosive": 0,
+      "poison": 0,
+      "disease": 0,
+      "necrotic": 0,
+      "drain": 0,
+      "void": 0,
+      "edged": 0,
+      "piercing": 0,
+      "blunt": 0
+   ]);
+}
+
+/*
+ * Get resistance for a specific damage type
+ */
+int query_damage_resistance(string damage_type)
+{
+   mapping resistances = query_damage_resistances();
+   return resistances[damage_type] || 0;
+}

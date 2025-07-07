@@ -2,12 +2,13 @@
 
 #include <combat_config.h>
 
-void simple_action(string msg, mixed *obs...);
+void simple_action(string msg, mixed context);
 varargs mixed *action(mixed *, mixed, object, object);
 void inform(mixed *, mixed, object);
 varargs void filtered_inform(object *who, string *msgs, mixed others, function filter, mixed extra);
-varargs void filtered_simple_action(mixed msg, function filter, mixed extra, mixed *obs...);
+varargs void filtered_simple_action(mixed msg, function filter, mixed extra, mixed *obs);
 string query_combat_message(string);
+string query_damage_effect(string damage_type);
 string cconfig;
 
 void update_combat_config()
@@ -108,7 +109,7 @@ void handle_message(mixed mess, object target, object weapon, string limb)
 
       if (!tmp)
       {
-         simple_action("$N $vare puzzled because $n $vhave no message for '" + mess[1..] + "'.");
+         simple_action("$N $vare puzzled because $n $vhave no message for '" + mess[1..] + "'.", this_object());
          TBUG(mess);
          TBUG(target);
          TBUG(weapon);
@@ -130,8 +131,31 @@ void handle_message(mixed mess, object target, object weapon, string limb)
    if (!weapon)
       return;
 
+   // Use provided limb or get random limb from target
    if (!limb)
       limb = target->query_random_limb();
+
+   // Generate more descriptive combat messages with body parts and damage types
+   if (mess == "hit" || mess == "!hit")
+   {
+      string damage_type = weapon->query_damage_type() || "edged";
+      string damage_effect = query_damage_effect(damage_type);
+      
+      // Create descriptive hit message with body part and damage type
+      mess = "$N $v" + damage_effect + " $t on the " + limb + " for $o damage.";
+   }
+   else if (mess == "miss" || mess == "!miss")
+   {
+      mess = "$N $vmiss $t completely.";
+   }
+   else if (mess == "dodge" || mess == "!dodge")
+   {
+      mess = "$N $vdodge $t's attack with agile reflexes.";
+   }
+   else if (mess == "block" || mess == "!block")
+   {
+      mess = "$N $vblock $t's attack with $p shield.";
+   }
 
    messages = action(combat_who, mess, weapon->alt_weapon() ? weapon->alt_weapon() : weapon, target->query_weapon(),
                      limb, weapon->secondary_weapon_part());

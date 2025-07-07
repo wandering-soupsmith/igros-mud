@@ -6,9 +6,10 @@ inherit WEAPON;
 void setup()
 {
    set_id("greataxe", "axe");
+   set_weapon_class("axe");
+   set_weapon_damage_class(12);
    set_weight(3.2);
    set_value(30);
-   set_weapon_class(12);
    set_combat_messages("combat-sword");
    set_damage_type("slashing");
    set_skill_used("combat/melee/blade");

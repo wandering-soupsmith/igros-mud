@@ -2,7 +2,7 @@
 
 #include <combat_modules.h>
 
-inherit SWORD;
+inherit WEAPON;
 
 #if BLOWS_STYLE == BLOWS_TYPES
 #define evt_data(evt) evt.data[0]
@@ -36,6 +36,9 @@ class event_info source_modify_event(class event_info evt)
 
 void setup()
 {
+   set_weapon_class("sword");
+   set_weapon_damage_class(12);
+   set_damage_type("edged");
    set_adj("glowing");
    set_id("sword");
    add_id("mercy");

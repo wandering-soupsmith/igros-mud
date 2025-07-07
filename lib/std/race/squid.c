@@ -79,4 +79,42 @@ class stat_roll_mods query_roll_mods()
    ret.cha_range = 8;
 
    return ret;
+}
+
+/*
+ * Define damage resistances for this race.
+ * Positive values = resistance (reduces damage)
+ * Negative values = vulnerability (increases damage)
+ * Values are percentages (e.g., 25 = 25% resistance)
+ */
+mapping query_damage_resistances()
+{
+   return ([
+      // Squids are aquatic creatures with unique resistances
+      "radiant": 0,      // No special radiant resistance
+      "plasma": -15,     // Vulnerable to plasma (aquatic creature)
+      "fire": -25,       // Very vulnerable to fire (aquatic creature)
+      "electric": -20,   // Very vulnerable to electricity (conductive)
+      "sonic": 10,       // Resistant to sonic (adapted to underwater pressure)
+      "cold": 15,        // Resistant to cold (adapted to deep water)
+      "psionic": 5,      // Slightly resistant to psionic (high intelligence)
+      "corrosive": -10,  // Vulnerable to corrosive (soft tissue)
+      "poison": 0,       // No special poison resistance
+      "disease": -5,     // Slightly vulnerable to disease
+      "necrotic": 0,     // No special necrotic resistance
+      "drain": 0,        // No special drain resistance
+      "void": 0,         // No special void resistance
+      "edged": 5,        // Slippery skin provides slight edged resistance
+      "piercing": -10,   // Vulnerable to piercing attacks
+      "blunt": 0         // No special blunt resistance
+   ]);
+}
+
+/*
+ * Get resistance for a specific damage type
+ */
+int query_damage_resistance(string damage_type)
+{
+   mapping resistances = query_damage_resistances();
+   return resistances[damage_type] || 0;
 } 

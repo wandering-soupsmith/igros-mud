@@ -1,12 +1,13 @@
 /* Do not remove the headers from this file! see /USAGE for more info. */
 
-inherit SWORD;
-
+inherit WEAPON;
 
 void setup()
 {
    set_adj("dull");
-   set_weapon_class(15);
+   set_weapon_class("sword");
+   set_weapon_damage_class(15);
+   set_damage_type("edged");
 #ifdef USE_SIZE
    set_size(MEDIUM);
 #endif

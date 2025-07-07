@@ -3,7 +3,7 @@
 //Example rapier that modified a skill when wielded, and removes it again when unwielded.
 //Notice custom property "skillfull".
 
-inherit SWORD;
+inherit WEAPON;
 
 void wielded()
 {
@@ -17,7 +17,8 @@ void unwielded()
 
 void setup()
 {
-   set_weapon_class(8);
+   set_weapon_class("rapier");
+   set_weapon_damage_class(8);
    set_id("rapier");
    set_weight(1.0);
    set_value(25);

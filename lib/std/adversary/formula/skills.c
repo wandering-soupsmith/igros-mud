@@ -16,6 +16,7 @@
 #define TO_HIT_STAT_IMPACT 5
 
 inherit CLASS_SKILL;
+inherit "/std/modules/m_combat_formulas";
 
 private
 nosave int combat_debug = 0;
@@ -46,95 +47,18 @@ int should_cap_skill(string skillname)
 
 int chance_to_hit(object weapon, object target)
 {
-   string attack_skill = weapon ? weapon->query_skill_used() : "combat/melee/unarmed";
-   string defend_skill = target->query_defend_skill_used();
-   int skill_contrib = strsrch(attack_skill, "combat/guns") != -1 ? (this_object()->query_dex() / TO_HIT_STAT_IMPACT)
-                                                                  : (this_object()->query_str() / TO_HIT_STAT_IMPACT);
-   int attack_value;
-   int defend_value;
-   int attack_mod = 1;
-   int defend_mod = 1;
-   int res;
-   int skill_test = 0;
-   int train_limit;
-
-   // Skill restrictions
-   if (weapon->query_restricted())
-   {
-      attack_skill = weapon->query_restricted_skill();
-      attack_mod = 10;
-      defend_mod = 10;
-   }
-
-   attack_value = to_int(aggregate_skill(attack_skill) / attack_mod);
-   defend_value = target->aggregate_skill(defend_skill) * defend_mod || 1;
-
-   if (combat_debug)
-      TBUG("This: " + this_object() + " Weapon: " + weapon + " target: " + target + "\nAttack skill: " + attack_skill +
-           " (" + attack_value + ") Defend skill: " + defend_skill + " (" + defend_value + ")");
-   // TBUG("Train restriction: Limit: " + weapon->query_train_limit() + " rank: " + cached_skill_rank(attack_skill));
-   if (combat_debug)
-      TBUG("@( ((0.0+" + attack_value + ") / " + defend_value + ") * 50)");
-   train_limit = cached_skill_rank(attack_skill) >= weapon->query_train_limit() || should_cap_skill(attack_skill);
-   skill_test = this_object()->test_skill(attack_skill, defend_value, train_limit); // Don't learn things.
-
-   res = ((0.0 + attack_value) / defend_value) * 50 + skill_contrib;
-   if (combat_debug)
-      TBUG("Res before skill test: " + res + " skill_test:" + skill_test);
-
-   if (skill_test)
-   {
-      // Calculate the value for successful skill_test
-      if (weapon)
-         res += weapon->query_to_hit_bonus(target) + random(weapon->query_weapon_class());
-      else
-         res += query_to_hit_bonus(target) + random(query_weapon_class());
-   }
-   if (combat_debug)
-      TBUG("Res after skill test: " + res + " (clamped between 0 and 100)");
-
-   res = CLAMP(to_int(res), 0, 100);
-   return res;
+   // Use new combat formulas module
+   return calculate_hit_chance(this_object(), target, weapon);
 }
 
 int defend_chance(object weapon, object target)
 {
-   string attack_skill = weapon ? weapon->query_skill_used() : "combat/melee/unarmed";
-   string defend_skill = target->query_defend_skill_used();
-   int attack_value;
-   int defend_value;
-   int attack_mod = 1;
-   int defend_mod = 1;
-   int res;
-   int skill_impact = 1;
-   int train_limit;
-
-   if (target->should_cap_skill(defend_skill))
-      train_limit = 1;
-
-   // Skill restrictions
-   if (weapon->query_restricted())
-   {
-      attack_skill = weapon->query_restricted_skill();
-      attack_mod = 10;
-      defend_mod = 10;
-   }
-
-   attack_value = to_int(aggregate_skill(attack_skill) / attack_mod) || 1;
-   defend_value = target->aggregate_skill(defend_skill) * defend_mod || 1;
-
-   if (target->test_skill(defend_skill, attack_value, train_limit))
-   {
-      skill_impact = 2;
-      target->dodge_message();
-   }
-
-   res = ((0.0 + defend_value) / attack_value) * MAX_SKILL_VALUE;
-   res = (res * 50 / (MAX_SKILL_VALUE)) + (((target->query_dex() * skill_impact) / DEFEND_STAT_IMPACT));
-   if (combat_debug)
-      TBUG("defend," + defend_skill + "," + defend_value + ",attack," + attack_skill + "," + attack_value +
-           " skill impact: " + skill_impact + " res: " + res + "\n");
-   return res;
+   // Use new combat formulas module - combine dodge and block chances
+   int dodge_chance = calculate_dodge_chance(target, this_object());
+   int block_chance = calculate_block_chance(target, this_object());
+   
+   // Return the higher of the two (target chooses best defense)
+   return dodge_chance > block_chance ? dodge_chance : block_chance;
 }
 
 int disarm_chance(object target)
@@ -169,16 +93,7 @@ int disarm_chance(object target)
 
 int calculate_damage(object weapon, object target)
 {
-   string attack_skill = weapon ? weapon->query_skill_used() : "combat/melee/unarmed";
-   int skill_contrib = strsrch(attack_skill, "combat/guns") != -1 ? (this_object()->query_dex() / DAMAGE_STAT_IMPACT)
-                                                                  : (this_object()->query_str() / DAMAGE_STAT_IMPACT);
-
-   // If the weapon is set to restricted (happens when wielded in /std/adversary/wield/limbs)
-   // we reduce the damage by 90% (you suck!).
-   if (combat_debug)
-      TBUG("Damage parts: Weapon class: " + weapon->query_weapon_class() +
-           " Skill rank: " + cached_skill_rank(attack_skill) + " attack_skill: " + attack_skill +
-           " dmg bonus: " + query_damage_bonus(target) + " skill_contrib: " + skill_contrib);
-   return cached_skill_rank(attack_skill) + random(weapon->query_weapon_class()) + 1 + query_damage_bonus(target) +
-          skill_contrib;
+   // Use new combat formulas module
+   string skill_used = weapon ? query_weapon_skill(weapon) : "combat/unarmed";
+   return calculate_base_damage(this_object(), weapon, skill_used);
 }

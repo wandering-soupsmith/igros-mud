@@ -4,14 +4,15 @@ inherit AMMUNITION;
 
 void setup()
 {
-   set_id("11mm bullet", "ammo", "clip");
-   set_long("A clip of 11 mm standard high-velocity pistol ammo.");
+   set_id("11mm pistol bullet", "ammo", "clip");
+   set_weapon_class("ammo");
+   set_weapon_damage_class(12);
+   set_long("A clip of 11 mm pistol ammo.");
    set_combat_messages("combat-firearm");
    set_damage_type("force");
    set_skill_used("combat/ranged/pistol");
    set_charges(8);
    set_ammo_type("11mm bullets");
-   set_weapon_class(12);
    set_destruct_on_spent();
    set_value(24);
 }

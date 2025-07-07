@@ -12,10 +12,11 @@
 int query_level();
 void set_skill(string name, int sp);
 void set_str(int);
-void set_agi(int);
+void set_dex(int);
+void set_con(int);
 void set_int(int);
 void set_wil(int);
-void update_max_health();
+void set_cha(int);
 void heal_all();
 void set_natural_armour(int na);
 void set_damage_bonus(int x);
@@ -70,23 +71,29 @@ void setup_monster_defaults()
 {
    string *skills = SKILL_D->query_skills();
    int sp = skill_for_level();
+   int level = query_level();
+   
    if (this_object()->is_body())
       return;
 
    init_stats();
-   set_natural_armour(query_level() / 2);
-   set_damage_bonus(query_level() / 2);
+   set_natural_armour(level / 2);
+   set_damage_bonus(level / 2);
+
+   // Set 6-core stats based on level
+   set_str(level);
+   set_dex(level);
+   set_con(level);
+   set_int(level);
+   set_wil(level);
+   set_cha(level);
 
    foreach (string skill in skills)
    {
       set_skill(skill, sp);
    }
-   /*
-   set_str(query_level());
-   set_agi(query_level());
-   set_int(query_level());
-   set_wil(query_level());
-   */
-   update_max_health();
-   heal_all();
+   
+   // Health is now calculated from stats in the new system
+   // No need to update_max_health() - it's automatic
+   heal_all(); // Heal to full HP
 }

@@ -8,7 +8,7 @@ inherit CLASS_SKILL;
 void simple_action(string, object);
 int query_health(string);
 int do_unwield(mixed);
-varargs mixed call_hooks(string, mixed, mixed, mixed *...);
+varargs mixed call_hooks(string, mixed, mixed, object);
 varargs int do_wield(object ob, string limb, int force_dual_wield);
 
 private
@@ -156,7 +156,7 @@ varargs void wield(object ob, string limb, int force_dual_wield)
       ob->mark_wielded_by(this_object(), ({limb}));
    }
 
-   call_hooks("on_wield", HOOK_IGNORE,0,ob,limb);
+   call_hooks("on_wield", HOOK_IGNORE, 0, ob);
 
    // Uh oh, object is not for everyone
    restriction_level = ob->query_restriction_level();

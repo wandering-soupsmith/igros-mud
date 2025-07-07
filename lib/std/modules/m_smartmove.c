@@ -19,9 +19,9 @@ varargs mixed call_hooks(string, mixed, mixed);
 varargs mixed move(mixed dest, string where);
 string query_msg(string which);
 int test_flag(int which);
-void simple_action(string s, mixed *obs...);
-varargs string *action(object *who, mixed msg, mixed *obs...);
-varargs string compose_message(object forwhom, string msg, object *who, mixed *obs...);
+void simple_action(string s, mixed context);
+varargs string *action(object *who, mixed msg, object context);
+varargs string compose_message(object forwhom, string msg, object *who, mixed *obs);
 object query_target();
 
 private
@@ -96,9 +96,9 @@ nomask int move_me_there(class move_data data)
 
    /* Display the message */
    if (data.source)
-      tell_from_inside(last_loc, action(({data.who}), txt, data.source)[1]);
+      tell_from_inside(last_loc, action(({data.who}), txt, this_object())[1]);
    else
-      tell_from_inside(last_loc, action(({data.who}), txt, data.exit_dir)[1]);
+      tell_from_inside(last_loc, action(({data.who}), txt, this_object())[1]);
 
    /* Entrance messages */
    txt = data.enter_messages;
@@ -118,7 +118,7 @@ nomask int move_me_there(class move_data data)
    else if (data.source)
       simple_action(txt, data.source);
    else
-      simple_action(txt);
+      simple_action(txt, this_object());
 
    return r == MOVE_OK;
 }

@@ -4,16 +4,17 @@ inherit AMMUNITION;
 
 void setup()
 {
-   set_id("13mm plasma rounds", "ammo", "rounds", "magazine", "13mm");
-   set_long("A magazine of 13 mm plasma pistol ammo. The magazine contains 6 massive bullets of compressed plasma.");
+   set_id("13mm plasma round", "ammo", "clip");
+   set_weapon_class("ammo");
+   set_weapon_damage_class(20);
+   set_long("A clip of 13 mm plasma rounds.");
    set_combat_messages("combat-firearm");
-   set_damage_type("fire");
+   set_damage_type("energy");
    set_skill_used("combat/ranged/pistol");
    set_charges(6);
    set_ammo_type("13mm plasma");
-   set_weapon_class(20);
    set_destruct_on_spent();
-   set_value(6 * 15);
+   set_value(48);
 }
 
 string short()

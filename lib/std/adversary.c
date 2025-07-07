@@ -9,7 +9,6 @@
 
 inherit LIVING;
 inherit M_DAMAGE_SOURCE;
-inherit M_BODY_STATS;
 
 #define SUBDIR __DIR__ "adversary/"
 
@@ -27,7 +26,7 @@ inherit SUBDIR "skills";
 inherit SUBDIR "monster";
 
 inherit MODULE("death", DEATH_MODULE);
-inherit MODULE("health", HEALTH_MODULE);
+inherit __DIR__ "adversary/health/race_body";
 inherit MODULE("wield", WIELD_MODULE);
 inherit MODULE("armour", ARMOUR_MODULE);
 inherit MODULE("pulse", PULSE_MODULE);
@@ -44,7 +43,8 @@ void mudlib_setup(mixed *args...)
    // removing this line.
    check_combat_config();
    set_to_hit_bonus(-25); // -25% to hit bare hand.
-   set_weapon_class(3);   // and low WC
+   set_weapon_class("unarmed");
+   set_weapon_damage_class(3);   // and low WC
    set_combat_messages("combat-unarmed");
    set_death_message(query_default_death_message());
 
@@ -95,10 +95,7 @@ mixed direct_kill_liv(object ob)
 
 //: FUNCTION query_ghost
 // Returns 1 if the adversary is dead.
-int query_ghost()
-{
-   return HEALTH_MODULE::query_ghost();
-}
+// This function is inherited from race_body.c
 
 #ifdef USE_KARMA
 //: FUNCTION karma_impact
@@ -118,10 +115,7 @@ int event_damage(class event_info evt)
 
 //: FUNCTION diagnose
 // Returns a string describing the current state of the adversary.
-string diagnose()
-{
-   return HEALTH_MODULE::diagnose();
-}
+// This function is inherited from race_body.c
 
 #ifdef USE_SKILLS
 private

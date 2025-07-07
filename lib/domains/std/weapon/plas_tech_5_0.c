@@ -5,9 +5,10 @@ inherit RANGED_WEAPON;
 void setup()
 {
    set_id("plastech 5.0 pistol", "plastech", "5.0", "pistol");
+   set_weapon_class("pistol");
+   set_weapon_damage_class(2); // It can be used to bash if it's not loaded
    set_long("This powerful handgun with high-damage feels like a throwback to the American Wild West. It provides a "
             "touch of \"gunslinger\" attitude.");
-   set_weapon_class(2); // It can be used to bash if it's not loaded
    set_damage_type("bludgeon");
    set_time_to_load(4);
    set_weight(1.6);

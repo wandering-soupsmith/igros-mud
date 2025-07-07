@@ -221,4 +221,7 @@
 #define ADVANCEMENT_MODULE simple
 #endif
 
+/* Module definitions for inheritance */
+#define M_BODY_STATS "/std/modules/m_bodystats"
+
 #endif

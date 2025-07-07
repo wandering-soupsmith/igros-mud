@@ -5,16 +5,17 @@ void setup(){
     set_brief("How to make a basic sword");
     set_long(@MAY
 
-Inherit the appropriate file - SWORD, .
+Inherit WEAPON directly.
 Normal setup for adj, size and value (id not needed).
-Set weapon_class - approx max hps of damage from a hit.
+Set weapon_class to the weapon type name and weapon_damage_class to the damage value.
 
-inherit SWORD;
-
+inherit WEAPON;
 
 void setup() {
     set_adj("dull");
-    set_weapon_class(15);
+    set_weapon_class("sword");
+    set_weapon_damage_class(15);
+    set_damage_type("edged");
     set_size(MEDIUM);
     set_value(1000);
 }

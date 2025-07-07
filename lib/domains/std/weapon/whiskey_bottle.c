@@ -6,8 +6,10 @@ void setup()
 {
    set_id("whiskey bottle", "bottle");
    set_adj("broken");
+   set_weapon_class("improv");
+   set_weapon_damage_class(7);
+   set_damage_type("piercing");
    set_long("This broken whiskey bottle still smells of whiskey. Who would use such a weapon?");
-   set_weapon_class(7);
    set_disarm_bonus(2);
    set_damage_bonus(2);
    set_weight(2);

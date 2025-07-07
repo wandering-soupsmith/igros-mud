@@ -19,7 +19,7 @@ int panic();
 void try_heal();
 varargs void stop_fight(object);
 int check_condition(int);
-void simple_action(string);
+void simple_action(string, mixed);
 int query_ghost();
 void target_is_asleep();
 void handle_events();
@@ -28,6 +28,13 @@ object *query_readied();
 void remove_readied(object);
 int query_prone();
 int stand_up();
+int calculate_dodge_chance(object, object);
+int calculate_block_chance(object, object);
+int calculate_block_fatigue_cost(object);
+int calculate_base_damage(object, object, int);
+int calculate_armor_mitigation(object, string, int);
+int calculate_resistance_mitigation(object, string, int);
+int query_weapon_skill(object);
 
 void dispatch_opponent()
 {
@@ -56,8 +63,22 @@ void take_a_swing(object target)
    object weapon = query_weapon();
    object ammo;
    object *effs = mapp(this_object()->query_effects()) ? values(this_object()->query_effects()) : ({});
-   int chance, roll;
-
+   int chance;
+   int roll;
+   int damage;
+   int defense;
+   int def_roll;
+   string hit_limb;
+   string damage_type;
+   int dodge_chance;
+   int dodge_roll;
+   int block_chance;
+   int block_roll;
+   int block_cost;
+   int base_damage;
+   int armor_damage;
+   int final_damage;
+   
    if (badly_wounded())
       panic();
    else if (very_wounded() && random(10) < 4)
@@ -114,6 +135,7 @@ void take_a_swing(object target)
 
    // TBUG("Weapon is now: "+weapon);
 
+   // Use new combat formulas for hit chance
    chance = chance_to_hit(weapon, target);
 
    foreach (object eff in effs)
@@ -140,25 +162,50 @@ void take_a_swing(object target)
    }
    else
    {
-      // Add defense
-      int defense = defend_chance(weapon, target);
-      int damage = calculate_damage(weapon, target);
-      int def_roll = random(100);
-      if (defense < 5)
-         defense = 5;
-
-      // If target defended successfully, halve the damage
-      if (def_roll <= defense)
+      // NEW COMBAT FLOW: Defense & Mitigation System
+      
+      // Step 1: Dodge Check
+      dodge_chance = calculate_dodge_chance(target, this_object());
+      dodge_roll = random(100);
+      
+      if (dodge_roll <= dodge_chance)
       {
-         damage = damage * 0.5;
-         //      TBUG(this_object()->short() + " attacks " + target->short() + " Def chance: " + defense + " DEFENDED");
+         // Target dodged successfully
+         add_event(target, weapon, 0, "dodge");
+         return;
       }
-      //    else
-      //      TBUG(this_object()->short() + " attacks " + target->short() + " Def chance: " + defense + " FAIL DEFEND");
-
-      add_event(target, weapon,
-                target->query_random_armour_slot(), // Use the TARGET's armour slots, not your own, duh.
-                damage);
+      
+      // Step 2: Block Check (only if dodge failed)
+      block_chance = calculate_block_chance(target, this_object());
+      block_roll = random(100);
+      
+      if (block_roll <= block_chance)
+      {
+         // Target blocked successfully
+         block_cost = calculate_block_fatigue_cost(target);
+         target->hurt_fatigue(block_cost);
+         add_event(target, weapon, 0, "block");
+         return;
+      }
+      
+      // Step 3: Hit Location (only if both dodge and block failed)
+      hit_limb = target->query_random_limb();
+      
+      // Step 4: Base Damage Calculation
+      base_damage = calculate_base_damage(this_object(), weapon, query_weapon_skill(weapon));
+      
+      // Step 5: Armor Mitigation
+      armor_damage = calculate_armor_mitigation(target, hit_limb, base_damage);
+      
+      // Step 6: Damage Type and Resistance Mitigation
+      damage_type = weapon->query_damage_type() || "edged";
+      final_damage = calculate_resistance_mitigation(target, damage_type, armor_damage);
+      
+      // Step 7: Apply Final Damage
+      target->hurt_us(final_damage);
+      
+      // Step 8: Add Event with Hit Limb and Damage Type
+      add_event(target, weapon, hit_limb, final_damage);
    }
 }
 
@@ -189,7 +236,7 @@ void attack()
    if (!query_ghost() && query_prone())
    {
       stand_up();
-      simple_action("$N $vget back up.");
+      simple_action("$N $vget back up.", this_object());
       return;
    }
 
@@ -200,7 +247,7 @@ void attack()
          write(tmp);
       /*
       else
-        simple_action(tmp + "so $p blows are ineffective.");
+        simple_action(tmp + "so $p blows are ineffective.", this_object());
         */
       return;
    }

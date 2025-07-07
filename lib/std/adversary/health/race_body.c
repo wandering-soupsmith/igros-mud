@@ -3,19 +3,38 @@
 // Race-based body system - replaces per-limb health with race-defined body parts
 // 2024: New system for 6-core stats
 
+#include <global.h>
+#include <dirs.h>
+
 inherit CLASS_EVENT_INFO;
 inherit __DIR__ "diagnose_msg";
 inherit M_BODY_STATS;
 
-void die();
+// Private variable declarations - must be before any function that uses them
+private mapping body_parts = ([]);
+private string race_name;
+private nosave int health_time = time();
+private int heal_rate = 15;
+private int sober_rate = 30;
+private int dead = 0;
+private int drunk = 0; // 0: Sober
+private int abuse = 0; // 0: New born
+private int reflex = 0;
+private int reflex_rate = 30;
+private nosave int hp_cap;
+
+// Forward declarations
+void set_drunk(int d);
+
 varargs void simple_action(string, string);
-varargs void filtered_simple_action(mixed msg, function filter, mixed extra, mixed *obs...);
+varargs void filtered_simple_action(mixed msg, function filter, mixed extra, mixed *obs);
 void update_health();
 void save_me();
 int do_unwield(string);
 int query_asleep();
 int query_stunned();
 int query_level();
+int max_reflex();
 int reflex_max();
 varargs int xp_value(object);
 int query_con();
@@ -32,28 +51,15 @@ varargs int test_skill(string skill, int opposing_skill, int no_learn);
 int query_drunk_percent();
 string drunk_diagnose();
 
-private
-mapping body_parts = ([]);
-private
-string race_name;
-private
-nosave int health_time = time();
-private
-int heal_rate = 15;
-private
-int sober_rate = 30;
-private
-int dead = 0;
-private
-int drunk = 0; // 0: Sober
-private
-int abuse = 0; // 0: New born
-private
-int reflex = 0;
-private
-int reflex_rate = 30;
-private
-nosave int hp_cap;
+//: FUNCTION kill_us
+// Kills the adversary.
+void kill_us()
+{
+   dead = 1;
+   // Let the inheriting object handle death mechanics
+   // The actual die() function should be provided by the adversary
+   // that inherits this module
+}
 
 // Health system variables for the new simplified system
 // private
@@ -584,14 +590,6 @@ void set_heal_rate(int x)
 int query_heal_rate()
 {
    return heal_rate;
-}
-
-//: FUNCTION kill_us
-// Kills the adversary.
-void kill_us()
-{
-   dead = 1;
-   die();
 }
 
 //: FUNCTION reincarnate

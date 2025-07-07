@@ -3,6 +3,8 @@
 ## LPC Coding Standards
 - **ALWAYS** refer to CODING_STANDARDS.md for all LPC coding requirements
 - Follow the variable declaration rules: all declarations must be at function start
+- **CRITICAL LPC LESSON**: ALL variable declarations (int, string, float, etc.) must be at the very beginning of functions, before ANY executable code including if statements, assignments, or function calls
+- **LPC VARIABLE ORDER RULE**: All variables (including private/global) must be declared before their first use. The LPC compiler will fail if variables are used before declaration
 - Use `this_object()->` for module function calls to inheriting objects
 - Check inheritance order and add forward declarations when needed
 - Follow the documented file naming conventions
@@ -26,6 +28,7 @@
 
 ## Testing
 - Always provide update commands for modified files
+- **UPDATE COMMAND RULE**: Provide update commands WITHOUT the `lib/` prefix (e.g., `update std/modules/m_combat_formulas.c` not `update lib/std/modules/m_combat_formulas.c`)
 - Test basic functionality before considering work complete
 - Verify no compilation errors or memory issues
 
